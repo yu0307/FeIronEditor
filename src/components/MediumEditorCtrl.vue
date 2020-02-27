@@ -26,8 +26,11 @@ import {
     Bold,
     Code,
     Italic,
-    Link
+    Link,
+    Placeholder 
 } from "tiptap-extensions";
+import h1 from './Header1';
+import doc from './Doc';
 import menuoptions from "./menuOptions";
 export default {
     components: {
@@ -38,6 +41,7 @@ export default {
     data() {
         return {
             editor: new Editor({
+                autoFocus:true,
                 extensions: [
                     new Blockquote(),
                     new BulletList(),
@@ -49,13 +53,20 @@ export default {
                     new Link(),
                     new Bold(),
                     new Code(),
-                    new Italic()
-                ],
-                autoFocus:true,
-                editorProps: {
+                    new Italic(),
+                    new h1(),
+                    new doc(),
+                    new Placeholder({
+                        showOnlyCurrent: false,
+                        emptyNodeText: node => {
+                        if (node.type.name === 'header1') {
+                            return 'Title ...'
+                        }
+                        return 'Write something ...'
+                        },
+                    }),
 
-                },
-                content: "<p>This is just a boring paragraph</p>"
+                ]
             }),
             FloatingMenu:null
         };
@@ -69,6 +80,9 @@ export default {
 #FeIronEditor {
     * {
         transition: 0.5s;
+    }
+    h1{
+        font-size: 25px;
     }
     margin: 20px 20px 10px 50px;
     #FeIronEditorArea {
@@ -90,6 +104,14 @@ export default {
             &:focus-within,
             &:focus {
                 outline: inherit;
+            }
+            *.is-empty:before{
+            content: attr(data-empty-text);
+            float: left;
+            color: #aaa;
+            pointer-events: none;
+            height: 0;
+            font-style: italic;
             }
         }
     }
