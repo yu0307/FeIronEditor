@@ -1,17 +1,15 @@
 <template>
     <div 
-        
         class="component-ctrl"
-        :style="`top: ${menu.top}px`"
     >
-        <div class="menublock" v-show="menu.isActive">
+        <div class="menublock" >
             <div class="ctrl animated fadeIn " >
-                <span class="ctr-add fa-stack fa-1x animated infinite float" @click="toggleCtrl">
+                <span class="ctr-add fa-stack fa-1x animated infinite float" @click.prevent="toggleCtrl">
                     <i class="far fa-circle fa-stack-2x"></i>
                     <i class="fas fa-plus fa-stack-1x" :class="{'fa-rotate-45':control_visible}"></i>
                 </span>
             </div>
-            <div class="ctrl ctrl-items" v-show="control_visible">
+            <div class="ctrl ctrl-items" v-show="control_visible" >
                 <ul>
                     <li class="ctrl-item">
                         <span class="fa-stack fa-1x animated zoomIn">
@@ -42,6 +40,15 @@ export default {
         menu:{
             required:true
         }
+    },
+    watch:{
+        'menu.top':{
+            deep:true,
+            handler(NewV){
+                this.$emit('UpdateMenuLocation',NewV);
+                this.hideControl();
+            }
+        },
     },
     methods:{
         toggleCtrl(){
@@ -75,8 +82,10 @@ export default {
 .component-ctrl{
     position: absolute;
     left: 10px;
+    margin-top: -5px;
+    padding-left: 15px;
+    padding-right: 5px;
     .menublock{
-        bottom: 5px;
         position: relative;
     }
     .ctr-add{
@@ -87,7 +96,7 @@ export default {
     }
     i{
         height: 26px;
-        transition-duration: 0.3s;
+        transition-duration: 0.2s;
     }
     .ctrl{
         display: inline-block;
@@ -95,7 +104,7 @@ export default {
         &.ctrl-items{
             position: relative;
             z-index: 1000;
-            margin-left: 15px;
+            padding-left: 15px;
         }
         .ctrl-item{
             display: inline-block;

@@ -1,20 +1,17 @@
 <template>
     <div id="FeIronEditor">
-        <editor-floating-menu :editor="editor" v-slot="{ commands, isActive, menu }">
-            <menuoptions
-                :menu="menu" 
-            />
-        </editor-floating-menu>
-        <editor-content 
-            :editor="editor" 
-            id="FeIronEditorArea" 
-        />
+        <menuctrl
+            :editor="editor"
+            :FloatMenuActive="FloatingMenu"
+        >
+
+        </menuctrl>
+        <editor-content :editor="editor" id="FeIronEditorArea" />
     </div>
 </template>
 
 <script>
-
-import { Editor, EditorContent, EditorFloatingMenu } from "tiptap";
+import { Editor, EditorContent } from "tiptap";
 import {
     Blockquote,
     BulletList,
@@ -27,21 +24,20 @@ import {
     Code,
     Italic,
     Link,
-    Placeholder 
+    Placeholder
 } from "tiptap-extensions";
-import h1 from './Header1';
-import doc from './Doc';
-import menuoptions from "./menuOptions";
+import h1 from "./Header1";
+import doc from "./Doc";
+import menuctrl from "./MenuControl";
 export default {
     components: {
         EditorContent,
-        EditorFloatingMenu,
-        menuoptions
+        menuctrl
     },
     data() {
         return {
             editor: new Editor({
-                autoFocus:true,
+                autoFocus: true,
                 extensions: [
                     new Blockquote(),
                     new BulletList(),
@@ -59,17 +55,52 @@ export default {
                     new Placeholder({
                         showOnlyCurrent: false,
                         emptyNodeText: node => {
-                        if (node.type.name === 'header1') {
-                            return 'Title ...'
+                            if (node.type.name === "header1") {
+                                return "Title ...";
+                            }
+                            return "Write something ...";
                         }
-                        return 'Write something ...'
-                        },
-                    }),
-
-                ]
+                    })
+                ],
+                onBlur: () => {
+                    this.FloatingMenu.activation= false; 
+                },
             }),
-            FloatingMenu:null
+            FloatingMenu: {
+                activation:false,
+                top:0
+            }
         };
+    },
+    mounted(){
+        
+        this.$el.addEventListener('mouseleave',()=>{
+            this.FloatingMenu.activation= this.editor.focused || false;  
+            if(this.editor.focused){
+                this.FloatingMenu.top=null;
+            }
+        });
+
+
+        this.$el.querySelector('#FeIronEditorArea').addEventListener('mouseover',(e)=>{
+            this.FloatingMenu.activation=true;
+            if(e.target.parentElement.classList.contains('ProseMirror')){
+                this.ComputeLocation(e.target);
+            }
+        },true);
+    },
+    watch:{
+        FloatingMenu:{
+            deep:true,
+            handler(newV){
+                return newV;
+            }
+        }
+    },
+    methods:{
+        ComputeLocation(target){
+            this.FloatingMenu.top=target.getBoundingClientRect().top-7;
+        }
     },
     beforeDestroy() {
         this.editor.destroy();
@@ -79,12 +110,13 @@ export default {
 <style lang="scss">
 #FeIronEditor {
     * {
-        transition: 0.5s;
+        transition: 0.3s;
     }
-    h1{
+    h1 {
         font-size: 25px;
     }
-    margin: 20px 20px 10px 50px;
+    margin: 10px;
+    padding-left: 35px;
     #FeIronEditorArea {
         .ProseMirror {
             & * {
@@ -105,26 +137,14 @@ export default {
             &:focus {
                 outline: inherit;
             }
-            *.is-empty:before{
-            content: attr(data-empty-text);
-            float: left;
-            color: #aaa;
-            pointer-events: none;
-            height: 0;
-            font-style: italic;
+            *.is-empty:before {
+                content: attr(data-empty-text);
+                float: left;
+                color: #aaa;
+                pointer-events: none;
+                height: 0;
+                font-style: italic;
             }
-        }
-    }
-    .floating-menu {
-        position: absolute;
-        z-index: 1;
-        margin-top: -0.25rem;
-        visibility: hidden;
-        opacity: 0;
-        transition: opacity 0.2s, visibility 0.2s;
-        &.is-active {
-            opacity: 1;
-            visibility: visible;
         }
     }
 }
