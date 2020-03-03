@@ -1,122 +1,210 @@
 <template>
-    <div 
-        class="component-ctrl"
-    >
-        <div class="menublock" >
-            <div class="ctrl animated fadeIn " >
-                <span class="ctr-add fa-stack fa-1x animated infinite float" @click.prevent="toggleCtrl">
+    <div class="component-ctrl">
+        <div class="menublock wrap">
+            <div class="ctrl animated fadeIn hoverhandle">
+                <span
+                    class="ctr-add fa-stack fa-1x animated infinite float"
+                    @click.prevent="toggleCtrl"
+                >
                     <i class="far fa-circle fa-stack-2x"></i>
                     <i class="fas fa-plus fa-stack-1x" :class="{'fa-rotate-45':control_visible}"></i>
                 </span>
             </div>
-            <div class="ctrl ctrl-items" v-show="control_visible" >
+            <div
+                class="ctrl ctrl-items"
+                v-show="control_visible"
+                :class="[control_visible?'isActive':'']"
+            >
                 <ul>
-                    <li class="ctrl-item">
-                        <span class="fa-stack fa-1x animated zoomIn">
-                            <i class="far fa-circle fa-stack-2x"></i>
-                            <i class="fas fa-camera-retro fa-stack-1x"></i>
-                        </span>
+                    <li class="ctrl-item blob">
+                        <div class="item">
+                            <span class="fa-stack fa-lg animated zoomIn">
+                                <i class="far fa-circle fa-stack-2x"></i>
+                                <i class="fas fa-camera-retro fa-stack-1x"></i>
+                            </span>
+                        </div>
                     </li>
-                    <li class="ctrl-item">
-                        <span class="fa-stack fa-1x animated zoomIn">
-                            <i class="far fa-circle fa-stack-2x"></i>
-                            <i class="fas fa-ellipsis-h fa-stack-1x"></i>
-                        </span>
+                    <li 
+                        class="ctrl-item blob"
+                        @click="editor.commands.horizontal_rule"
+                    >
+                        <div class="item">
+                            <span class="fa-stack fa-lg animated zoomIn">
+                                <i class="far fa-circle fa-stack-2x"></i>
+                                <i class="fas fa-ellipsis-h fa-stack-1x"></i>
+                            </span>
+                        </div>
                     </li>
                 </ul>
             </div>
         </div>
+        <svg>
+            <defs>
+                <filter id="filt">
+                    <feGaussianBlur in="SourceGraphic" result="blur" stdDeviation="12" />
+                    <feColorMatrix
+                        in="blur"
+                        mode="matrix"
+                        values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 18 -7"
+                        result="filt"
+                    />
+                    <feBlend in2="filt" in="SourceGraphic" result="mix" />
+                </filter>
+            </defs>
+        </svg>
     </div>
 </template>
 
 <script>
 export default {
-    data(){
-        return{
-            control_visible:false
-        }
+    data() {
+        return {
+            control_visible: false
+        };
     },
-    props:{
-        menu:{
+    props: {
+        menu: {
+            required: true
+        },
+        editor:{
             required:true
         }
     },
-    watch:{
-        'menu.top':{
-            deep:true,
-            handler(NewV){
-                this.$emit('UpdateMenuLocation',NewV);
-                this.hideControl();
-            }
+    methods: {
+        toggleCtrl() {
+            this.control_visible = !this.control_visible;
         },
-    },
-    methods:{
-        toggleCtrl(){
-            this.control_visible=!this.control_visible;
-        },
-        hideControl(){
-            this.control_visible=false;
+        hideControl() {
+            this.control_visible = false;
         }
     }
-}
+};
 </script>
 
 <style lang="scss">
 @keyframes float {
-	0% {
-		transform: translatey(0px);
-	}
-	50% {
-		transform: translatey(-5px);
-	}
-	100% {
-		transform: translatey(0px);
-	}
+    0% {
+        transform: translatey(0px);
+    }
+    50% {
+        transform: translatey(-5px);
+    }
+    100% {
+        transform: translatey(0px);
+    }
 }
-.float{
+
+@keyframes harlem {
+    0% {
+        transform: translate(0);
+        -webkit-transform: translate(0);
+        -moz-transform: translate(0);
+        -o-transform: translate(0);
+        -ms-transform: translate(0);
+    }
+    25% {
+        transform: translate(5px, 5px);
+        -webkit-transform: translate(5px, 5px);
+        -moz-transform: translate(5px, 5px);
+        -o-transform: translate(5px, 5px);
+        -ms-transform: translate(5px, 5px);
+    }
+    50% {
+        transform: translate(-5px, -5px);
+        -webkit-transform: translate(-5px, -5px);
+        -moz-transform: translate(-5px, -5px);
+        -o-transform: translate(-5px, -5px);
+        -ms-transform: translate(-5px, -5px);
+    }
+    75% {
+        transform: translate(2px, 2px);
+        -webkit-transform: translate(2px, 2px);
+        -moz-transform: translate(2px, 2px);
+        -o-transform: translate(2px, 2px);
+        -ms-transform: translate(2px, 2px);
+    }
+    100% {
+        transform: translate(0);
+        -webkit-transform: translate(0);
+        -moz-transform: translate(0);
+        -o-transform: translate(0);
+        -ms-transform: translate(0);
+    }
+}
+
+.float {
     animation-name: float;
 }
+
 .fa-rotate-45 {
     transform: rotate(45deg);
 }
-.component-ctrl{
+
+.component-ctrl {
     position: absolute;
-    left: 10px;
+    width: 100%;
+    left: 0px;
     margin-top: -5px;
     padding-left: 15px;
     padding-right: 5px;
-    .menublock{
+    svg {
+        position: absolute;
+    }
+    .wrap {
+        filter: url("#filt");
+        z-index: 1000;
+        .blob {
+            display: inline-block;
+            cursor: pointer;
+            border: none;
+            outline: none;
+            padding-left: 15px;
+            z-index: 1000;
+            box-shadow: 0 0 10px 1px rgba(255, 255, 255, 0.3) inset;
+            top: 0px;
+            left: 0px;
+            .animated {
+                animation-duration: 0.3s !important;
+            }
+            transition: all 0.3s ease-in-out !important;
+            .item {
+                background-color: #555;
+                color: snow;
+                border-radius: 50%;
+                .fa-stack {
+                    width: 2em;
+                }
+            }
+            &:hover {
+                color: #f44336;
+                animation: harlem 0.5s linear forwards !important;
+            }
+        }
+        .hoverhandle {
+            position: absolute;
+            z-index: 1050;
+            transition: transform 0.2s ease-in-out 0.2s !important;
+        }
+        & > .ctrl-items {
+            position: absolute;
+            z-index: 1000;
+            padding-left: 25px;
+            margin-top: -5px;
+        }
+    }
+
+    .menublock {
         position: relative;
     }
-    .ctr-add{
+    .ctr-add {
         cursor: pointer;
         animation-duration: 3s;
         animation-delay: 1s;
         top: 2px;
     }
-    i{
+    i {
         height: 26px;
         transition-duration: 0.2s;
-    }
-    .ctrl{
-        display: inline-block;
-        vertical-align: middle;
-        &.ctrl-items{
-            position: relative;
-            z-index: 1000;
-            padding-left: 15px;
-        }
-        .ctrl-item{
-            display: inline-block;
-            cursor: pointer;
-            min-width: 15px;
-            .fa-stack{
-                animation-duration: 0.2s;
-                i{
-                    vertical-align: middle;
-                }
-            }
-        }
     }
 }
 </style>

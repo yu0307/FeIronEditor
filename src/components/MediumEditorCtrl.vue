@@ -1,11 +1,6 @@
 <template>
     <div id="FeIronEditor">
-        <menuctrl
-            :editor="editor"
-            :FloatMenuActive="FloatingMenu"
-        >
-
-        </menuctrl>
+        <menuctrl :editor="editor" :FloatMenuActive="FloatingMenu" ref="menuCtrl"></menuctrl>
         <editor-content :editor="editor" id="FeIronEditorArea" />
     </div>
 </template>
@@ -24,10 +19,10 @@ import {
     Code,
     Italic,
     Link,
-    Placeholder
+    Placeholder,
+    HorizontalRule,
+    Underline
 } from "tiptap-extensions";
-import h1 from "./Header1";
-import doc from "./Doc";
 import menuctrl from "./MenuControl";
 export default {
     components: {
@@ -50,8 +45,8 @@ export default {
                     new Bold(),
                     new Code(),
                     new Italic(),
-                    new h1(),
-                    new doc(),
+                    new HorizontalRule(),
+                    new Underline(),
                     new Placeholder({
                         showOnlyCurrent: false,
                         emptyNodeText: node => {
@@ -63,43 +58,71 @@ export default {
                     })
                 ],
                 onBlur: () => {
-                    this.FloatingMenu.activation= false; 
-                },
+                    this.FloatingMenu.activation = false;
+                    this.FloatingMenu.ControlTop = this.FloatingMenu.top;
+                    this.FloatingMenu.editorDom = null;
+                }
             }),
             FloatingMenu: {
-                activation:false,
-                top:0
+                activation: false,
+                top: 0,
+                ControlTop: 0,
+                cursorDom: null,
+                editorDom: null
             }
         };
     },
-    mounted(){
-        
-        this.$el.addEventListener('mouseleave',()=>{
-            this.FloatingMenu.activation= this.editor.focused || false;  
-            if(this.editor.focused){
-                this.FloatingMenu.top=null;
+    mounted() {
+        this.$el.addEventListener("mouseleave", () => {
+            this.FloatingMenu.activation = this.editor.focused || false;
+            if (this.editor.focused) {
+                this.FloatingMenu.top = null;
             }
+            this.FloatingMenu.cursorDom = null;
         });
 
+        let EditorCtrl = this.$el.querySelector("#FeIronEditorArea");
 
-        this.$el.querySelector('#FeIronEditorArea').addEventListener('mouseover',(e)=>{
-            this.FloatingMenu.activation=true;
-            if(e.target.parentElement.classList.contains('ProseMirror')){
-                this.ComputeLocation(e.target);
-            }
-        },true);
+        EditorCtrl.addEventListener(
+            "mouseover",
+            e => {
+                this.FloatingMenu.activation = true;
+                if (e.target.parentElement.classList.contains("ProseMirror")) {
+                    this.FloatingMenu.top = this.ComputeLocation(e.target);
+                    this.FloatingMenu.cursorDom = e.target;
+                }
+            },
+            true
+        );
     },
-    watch:{
-        FloatingMenu:{
-            deep:true,
-            handler(newV){
+    watch: {
+        FloatingMenu: {
+            deep: true,
+            handler(newV) {
                 return newV;
+            }
+        },
+        "editor.selection.from": {
+            deep: true,
+            handler() {
+                if (this.editor.focused) {
+                    let node = this.editor.view.domAtPos(
+                        this.editor.state.selection.anchor
+                    ).node;
+                    if (node.nodeName == "#text") {
+                        node = node.parentNode;
+                    }
+                    this.FloatingMenu.top = this.FloatingMenu.ControlTop = this.ComputeLocation(
+                        node
+                    );
+                    this.FloatingMenu.editorDom = this.FloatingMenu.cursorDom = node;
+                }
             }
         }
     },
-    methods:{
-        ComputeLocation(target){
-            this.FloatingMenu.top=target.getBoundingClientRect().top-7;
+    methods: {
+        ComputeLocation(target) {
+            return target.offsetTop + target.getBoundingClientRect().height / 2;
         }
     },
     beforeDestroy() {
@@ -144,6 +167,50 @@ export default {
                 pointer-events: none;
                 height: 0;
                 font-style: italic;
+            }
+            ul{
+                margin-left: 10px;
+                list-style-type: circle;
+            }
+            hr {
+                overflow: visible;
+                content: "";
+                background-color: #3c3c3c;
+                display: block;
+                height: 5px;
+                width: 5px;
+                border-radius: 50%;
+                position: relative;
+                box-sizing: content-box;
+                line-height: 0px;
+                padding: 0px;
+                border: none;
+                margin: 10px auto;
+                pointer-events:none;
+                &:before {
+                    content: "" !important;
+                    background-color: #3c3c3c;
+                    display: block;
+                    height: 5px !important;
+                    width: 5px;
+                    border-radius: 50%;
+                    position: absolute;
+                    left: -25px;
+                    -webkit-animation: dot-move-left 1s ease-out forwards;
+                    animation: dot-move-left 1s ease-out forwards;
+                }
+                &:after {
+                    content: "" !important;
+                    background-color: #3c3c3c;
+                    display: block;
+                    height: 5px !important;
+                    width: 5px;
+                    border-radius: 50%;
+                    position: absolute;
+                    left: 25px;
+                    -webkit-animation: dot-move-left 1s ease-out forwards;
+                    animation: dot-move-left 1s ease-out forwards;
+                }
             }
         }
     }
