@@ -1,5 +1,6 @@
 <template>
     <div id="FeIronEditor">
+        <imguploader :Editor="editor" />
         <menuctrl :editor="editor" :FloatMenuActive="FloatingMenu" ref="menuCtrl"></menuctrl>
         <editor-content :editor="editor" id="FeIronEditorArea" />
     </div>
@@ -21,16 +22,20 @@ import {
     Link,
     Placeholder,
     HorizontalRule,
-    Underline
+    Underline,
+    Image,
 } from "tiptap-extensions";
 import menuctrl from "./MenuControl";
 import DropCap from "./extension/DropCap";
 import span from "./extension/span";
+import ImagePlaceholder from './extension/ImagePlaceholder';
+import imguploader from './ImageUploader';
 // import testingDoc from "./testing";
 export default {
     components: {
         EditorContent,
-        menuctrl
+        menuctrl,
+        imguploader
     },
     data() {
         return {
@@ -39,6 +44,8 @@ export default {
                 extensions: [
                     new DropCap(),
                     new span(),
+                    new Image(),
+                    new ImagePlaceholder(),
                     // new testingDoc(),
                     new Blockquote(),
                     new BulletList(),
@@ -56,7 +63,10 @@ export default {
                     new Placeholder({
                         showOnlyCurrent: false,
                         emptyNodeText: node => {
-                            if (node.type.name === "header1") {
+                            if (
+                                node.type.name === "heading" 
+                                && node.attrs!==undefined
+                                && node.attrs.level==1) {
                                 return "Title ...";
                             }
                             return "Write something ...";
@@ -223,7 +233,7 @@ export default {
                     animation: dot-move-left 1s ease-out forwards;
                 }
             }
-            .dropCap:first-child:first-letter {
+            .dropCap :first-child:first-letter {
                 float: left;
                 font-size: 50px;
                 line-height: 40px;
