@@ -24,6 +24,9 @@ import {
     Underline
 } from "tiptap-extensions";
 import menuctrl from "./MenuControl";
+import DropCap from "./extension/DropCap";
+import span from "./extension/span";
+// import testingDoc from "./testing";
 export default {
     components: {
         EditorContent,
@@ -34,6 +37,9 @@ export default {
             editor: new Editor({
                 autoFocus: true,
                 extensions: [
+                    new DropCap(),
+                    new span(),
+                    // new testingDoc(),
                     new Blockquote(),
                     new BulletList(),
                     new CodeBlock(),
@@ -168,7 +174,12 @@ export default {
                 height: 0;
                 font-style: italic;
             }
-            ul{
+            a {
+                cursor: pointer;
+                text-decoration: underline;
+                color: #294985;
+            }
+            ul {
                 margin-left: 10px;
                 list-style-type: circle;
             }
@@ -186,7 +197,7 @@ export default {
                 padding: 0px;
                 border: none;
                 margin: 10px auto;
-                pointer-events:none;
+                pointer-events: none;
                 &:before {
                     content: "" !important;
                     background-color: #3c3c3c;
@@ -211,6 +222,13 @@ export default {
                     -webkit-animation: dot-move-left 1s ease-out forwards;
                     animation: dot-move-left 1s ease-out forwards;
                 }
+            }
+            .dropCap:first-child:first-letter {
+                float: left;
+                font-size: 50px;
+                line-height: 40px;
+                padding: 2px;
+                text-transform: uppercase;
             }
         }
     }

@@ -12,9 +12,10 @@
             :editor="editor"
             :keep-in-bounds="true"
             v-slot="{ commands, isActive, getMarkAttrs, menu }"
+            @hide="hideSubCtrl"
         >
             <div
-                class="menububble"
+                class="menububble animated zoomIn"
                 :class="{ 'is-active': menu.isActive }"
                 :style="`left: ${menu.left}px; bottom: ${menu.bottom}px;`"
             >
@@ -34,7 +35,14 @@
                             />
                             <button
                                 class="menububble__button"
-                                @click="setLinkUrl(commands.link, null)"
+                                @click="setLinkUrl(commands.link, linkUrl)"
+                                type="button"
+                            >
+                                <i class="fas fa-check"></i>
+                            </button>
+                            <button
+                                class="menububble__button"
+                                @click="toggleSubCtrl(false)"
                                 type="button"
                             >
                                 <i class="far fa-times-circle"></i>
@@ -76,7 +84,7 @@
                     <div
                         class="menububble__button"
                         :class="{ 'is-active': isActive.link() }"
-                        @click="commands.link"
+                        @click="showLinkMenu(getMarkAttrs('link'))"
                     >
                         <div class="btn-inner">
                             <i class="fas fa-link"></i>
@@ -115,10 +123,37 @@
 
                     <div
                         class="menububble__button"
+                        :class="{ 'is-active': isActive.DropCap() }"
+                        @click="commands.DropCap"
+                    >
+                        <div class="btn-inner seperatLeft">
+                            <span class="fa-layers fa-fw ">
+                                
+                                <i class="fas fa-align-justify fa-lg"></i>
+                                <i 
+                                    class="fas fa-square"
+                                    data-fa-transform="shrink-1 left-4 up-4"
+                                    style="color:#212121"
+                                >
+                                </i>
+                                <i 
+                                    class="fas fa-font" 
+                                    data-fa-transform="shrink-2 left-4 up-4"
+                                >
+                                </i>
+                                
+                                
+                            </span>
+                            
+                        </div>
+                    </div>
+
+                    <div
+                        class="menububble__button"
                         :class="{ 'is-active': isActive.heading({ level: 1 }) }"
                         @click="commands.heading({ level: 1 })"
                     >
-                        <div class="btn-inner seperatLeft">
+                        <div class="btn-inner">
                             <i class="fas fa-heading fa-lg"></i>
                         </div>
                     </div>
@@ -148,7 +183,7 @@ export default {
             focusedLocation: 0,
             linkUrl: null,
             isSubCtrlVisible: false,
-            subCtrlName:null
+            subCtrlName: null
         };
     },
     components: {
@@ -181,9 +216,30 @@ export default {
         toggleSubCtrl(tarVal = null) {
             this.isSubCtrlVisible =
                 tarVal === null ? !this.isSubCtrlVisible : tarVal;
+            if (!this.isSubCtrlVisible) {
+                this.linkUrl = null;
+                this.subCtrlName = null;
+            }
         },
         setLinkUrl(command, url) {
             command({ href: url });
+            this.toggleSubCtrl(false);
+        },
+        hideSubCtrl() {
+            this.toggleSubCtrl(false);
+        },
+        showLinkMenu(attrs) {
+            this.linkUrl = attrs.href;
+            this.showSubCtrl("link");
+            this.$nextTick(() => {
+                this.$refs.linkInput.focus();
+            });
+        },
+        showSubCtrl(name = null) {
+            if (name) {
+                this.subCtrlName = name;
+                this.toggleSubCtrl(true);
+            }
         }
     },
     mounted() {
@@ -200,22 +256,52 @@ export default {
 
 <style lang='scss'>
 .MedMenus {
+    input,
+    button {
+        &:focus-within,
+        &:focus {
+            outline: inherit !important;
+        }
+    }
+    i {
+        margin: 0px;
+    }
     .menububble {
         visibility: hidden;
         position: absolute;
         display: flex;
-        transform: translateX(-50%);
         z-index: 1001;
         margin-left: 10px;
+        transform: translateX(-50%);
+        &,
+        & * {
+            transition: 0s !important;
+        }
+        &,
+        & .animated {
+            animation-duration: 0.3s !important;
+        }
+        .subCtrl {
+            padding: 0px 0px 0px 10px;
+            background: #212121;
+            margin: 2px;
+            border-radius: 5px;
+        }
         .bubbleMainCtrls {
             display: inline-flex;
         }
         &.is-active {
             visibility: visible;
         }
-        .animated {
-            animation-duration: 0.2s !important;
-            transition: 0.2s !important;
+        .menububble__input {
+            font: inherit;
+            border: none;
+            background: transparent;
+            color: #fff;
+        }
+        .menububble__form {
+            display: flex;
+            align-items: center;
         }
         .menububble__button {
             padding: 5px 0px;
@@ -225,20 +311,14 @@ export default {
             border-radius: inherit;
             min-width: 40px;
             cursor: pointer;
-            animation-duration: 0.2s !important;
-            transition: 0.2s !important;
             .btn-inner {
                 padding: 5px 10px;
                 text-align: center;
             }
             .seperatLeft {
-                animation-duration: 0s !important;
-                transition: 0s !important;
                 border-left: 1px solid #737373;
             }
             .seperatRight {
-                animation-duration: 0s !important;
-                transition: 0s !important;
                 border-right: 1px solid #737373;
             }
         }
