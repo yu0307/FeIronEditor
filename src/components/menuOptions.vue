@@ -24,11 +24,11 @@
                             </span>
                         </div>
                     </li>
-                    <li 
-                        class="ctrl-item blob"
-                        @click="editor.commands.horizontal_rule"
-                    >
-                        <div class="item">
+                    <li class="ctrl-item blob">
+                        <div 
+                            class="item"
+                            @click="editor.execute( 'horizontalLine' )"
+                        >
                             <span class="fa-stack fa-lg animated zoomIn">
                                 <i class="far fa-circle fa-stack-2x"></i>
                                 <i class="fas fa-ellipsis-h fa-stack-1x"></i>
@@ -66,8 +66,8 @@ export default {
         menu: {
             required: true
         },
-        editor:{
-            required:true
+        editor: {
+            required: true
         }
     },
     methods: {
@@ -159,7 +159,7 @@ export default {
             border: none;
             outline: none;
             padding-left: 15px;
-            z-index: 1000;
+            z-index: 1050;
             box-shadow: 0 0 10px 1px rgba(255, 255, 255, 0.3) inset;
             top: 0px;
             left: 0px;
@@ -171,8 +171,17 @@ export default {
                 background-color: #555;
                 color: snow;
                 border-radius: 50%;
+                height: 38px;
+                width: 38px;
                 .fa-stack {
-                    width: 2em;
+                    background-color: #555;
+                    border-radius: 50%;
+                    height: 38px;
+                    width: 38px;
+                    .svg-inline--fa.fa-stack-2x {
+                        height: 2em;
+                        width: 2em;
+                    }
                 }
             }
             &:hover {
@@ -188,7 +197,7 @@ export default {
         & > .ctrl-items {
             position: absolute;
             z-index: 1000;
-            padding-left: 25px;
+            padding-left: 35px;
             margin-top: -5px;
         }
     }
@@ -204,6 +213,9 @@ export default {
     }
     i {
         height: 26px;
+        transition-duration: 0.2s;
+    }
+    svg.svg-inline--fa {
         transition-duration: 0.2s;
     }
 }

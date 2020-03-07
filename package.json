@@ -8,12 +8,24 @@
     "lint": "vue-cli-service lint"
   },
   "dependencies": {
+    "@ckeditor/ckeditor5-alignment": "^17.0.0",
+    "@ckeditor/ckeditor5-autoformat": "^17.0.0",
+    "@ckeditor/ckeditor5-autosave": "^17.0.0",
     "@ckeditor/ckeditor5-basic-styles": "^17.0.0",
+    "@ckeditor/ckeditor5-block-quote": "^17.0.0",
+    "@ckeditor/ckeditor5-code-block": "^17.0.0",
     "@ckeditor/ckeditor5-dev-utils": "^12.0.9",
     "@ckeditor/ckeditor5-dev-webpack-plugin": "^8.0.9",
+    "@ckeditor/ckeditor5-editor-balloon": "^17.0.0",
     "@ckeditor/ckeditor5-editor-classic": "^17.0.0",
     "@ckeditor/ckeditor5-essentials": "^17.0.0",
+    "@ckeditor/ckeditor5-heading": "^17.0.0",
+    "@ckeditor/ckeditor5-horizontal-line": "^17.0.0",
+    "@ckeditor/ckeditor5-image": "^17.0.0",
+    "@ckeditor/ckeditor5-indent": "^17.0.0",
     "@ckeditor/ckeditor5-link": "^17.0.0",
+    "@ckeditor/ckeditor5-list": "^17.0.0",
+    "@ckeditor/ckeditor5-media-embed": "^17.0.0",
     "@ckeditor/ckeditor5-paragraph": "^17.0.0",
     "@ckeditor/ckeditor5-theme-lark": "^17.0.0",
     "@ckeditor/ckeditor5-vue": "^1.0.1",
@@ -25,6 +37,7 @@
     "vue": "^2.6.11"
   },
   "devDependencies": {
+    "@ckeditor/ckeditor5-inspector": "^1.5.0",
     "@vue/cli-plugin-babel": "~4.2.0",
     "@vue/cli-plugin-eslint": "~4.2.0",
     "@vue/cli-service": "~4.2.0",
